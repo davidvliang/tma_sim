@@ -1,0 +1,4 @@
+function gamma = getHarmonicCoefficientMatrix
+    
+
+end
