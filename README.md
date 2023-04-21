@@ -8,8 +8,6 @@ Gonna try reimplement Ni et. al. 2021 in MATLAB/Simulink
 - ni_reimplement - [DRAFT] reimplement Ni2021 using matlab functions
 
 
-## Examples
-- openExample('phased/DOAExample')
 
 ## Toolboxes
 - Phased Array System Toolbox
@@ -22,3 +20,14 @@ Gonna try reimplement Ni et. al. 2021 in MATLAB/Simulink
 - RF Toolbox
 - Simulink
 - Simulink Control Design
+
+
+## MATLAB Examples
+- openExample('phased/DOAExample')
+
+## Simulink Examples
+- openExample('phased/slexBeamscanMVDRDOAExampleExample')
+- openExample('simrf/DemodulateTwoToneRFSignalUsingIQDemodulatorExample')
+
+## Other 
+- https://www.mathworks.com/help/phased/ug/music-super-resolution-doa-estimation.html 
