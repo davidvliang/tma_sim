@@ -4,40 +4,39 @@ clear all;
 clc;
 
 
-%% (uncategorized) Simulation Parameters
-br = 500; % bit-rate of incident signal [kbit/s] (500kbit/s)
-data_last = 50e-6; % "data last for 50us"? [seconds] (50 us)
-fp = 2e6; % modulation frequency of RF switches [Hz] (2MHz)
+%% (uncategorized/unused) Simulation Parameters
+br = 500;           % bit-rate of incident signal [kbit/s]
+data_last = 50e-6;  % "data last for 50us"? [seconds] 
+fp = 2e6;           % modulation frequency of RF switches [Hz]
 
 
 %% Source Signals
-K = [5, 15]; % broadside angles of signal sources [degrees]
-snr = 10; % signal-to-noise ratio of each source [dB]
+K = [5, 15];    % broadside angles of signal sources [degrees]
+snr = 10;           % signal-to-noise ratio of each source [dB]
 
 
 %% Initialize Phased Array
-N = 8; % number of antenna elements
-d = 0.5; % wavelength spacing between elements [wavelengths]
+N = 8;      % number of antenna elements
+d = 0.5;    % wavelength spacing between elements [wavelengths]
 
 element = phased.IsotropicAntennaElement;
 sULA = phased.ULA('Element',element, ...
                   'NumElements', N, ...
                   'ElementSpacing', d, ...
-                  'ArrayAxis','z');
+                  'ArrayAxis','y');
 
 
 %% Generate Gamma - Harmonic Coefficient Matrix
-Q = 4; % maximum sideband signal order Q. Set to maintain full column rank?
-L = N/2; % "ON" time of phase 0..
+Q = 4;      % maximum sideband signal order Q. Maintain full column rank?
+L = N/6;    % "ON" time of phase 0..
 
 gamma = getHarmonicCoefficientMatrix(Q,N,L);
 
 
 %% Generate Y(n_t) - Baseband Sideband Signals
-c = 3e8; % speed of light
-fc = 2.6e9; % center frequency of array [Hz] (2GHz)
-lambda = c/fc; % carrier wavelength
-snapshots = 100; 
+snapshots = 1000;                       % Nt snapshots
+fc = 2.6e9;                             % center frequency of array [Hz]
+lambda = physconst('LightSpeed')/fc;    % carrier wavelength
 
 Xnt = sensorsig(getElementPosition(sULA)/lambda, snapshots, K);
 Ynt = gamma*Xnt';
@@ -69,7 +68,7 @@ grid
 
 
 %% DF w/ ESPRIT
-% [e_doas,e_spec,e_specang] = espritdoa(xcov,length(K)); display(e_doas);
+e_doas = espritdoa(xcov,length(K)); display(e_doas);
 
 
 
