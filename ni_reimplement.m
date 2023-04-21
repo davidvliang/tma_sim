@@ -1,6 +1,6 @@
 %% Clear Workspace
 close all;
-clear all;
+clear;
 clc;
 
 
@@ -11,7 +11,7 @@ fp = 2e6;           % modulation frequency of RF switches [Hz]
 
 
 %% Source Signals
-K = [5, 15];    % broadside angles of signal sources [degrees]
+K = [5, 15];        % broadside angles of signal sources [degrees]
 snr = 10;           % signal-to-noise ratio of each source [dB]
 
 
@@ -28,18 +28,18 @@ sULA = phased.ULA('Element',element, ...
 
 %% Generate Gamma - Harmonic Coefficient Matrix
 Q = 4;      % maximum sideband signal order Q. Maintain full column rank?
-L = N/6;    % "ON" time of phase 0..
+L = N/2;    % "ON" time of phase 0..
 
 gamma = getHarmonicCoefficientMatrix(Q,N,L);
 
 
 %% Generate Y(n_t) - Baseband Sideband Signals
-snapshots = 1000;                       % Nt snapshots
+snapshots = 1024;                       % number of Nt snapshots
 fc = 2.6e9;                             % center frequency of array [Hz]
 lambda = physconst('LightSpeed')/fc;    % carrier wavelength
 
 Xnt = sensorsig(getElementPosition(sULA)/lambda, snapshots, K);
-Ynt = gamma*Xnt';
+Ynt = gamma*Xnt.';                      % A.' means nonconjugate transpose 
 
 
 %% Equation 21
@@ -48,7 +48,7 @@ Ynt = gamma*Xnt';
 %     Xhat(nt) = inv(gamma'*gamma)*gamma'*Ynt(nt);
 % end
 
-Xhat = inv(gamma'*gamma)\gamma'*Ynt;
+Xhat = inv(gamma'*gamma)\gamma'*Ynt;    % A' means conjugate transpose
 
 
 %% Generate Covariance Matrix 
@@ -69,10 +69,6 @@ grid
 
 %% DF w/ ESPRIT
 e_doas = espritdoa(xcov,length(K)); display(e_doas);
-
-
-
-
 
 
 
