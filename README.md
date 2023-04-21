@@ -3,9 +3,9 @@
 Gonna try reimplement Ni et. al. 2021 in MATLAB/Simulink
 
 
-## File List
+## Files
 - signal_model.slx - [DRAFT] simulink simulation of the signal model
-- ni_reimplement - [DRAFT] reimplement Ni2021 using matlab functions
+- ni_reimplement.m - [DRAFT] reimplement using matlab functions
 
 
 
