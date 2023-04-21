@@ -5,13 +5,9 @@ clc;
 
 
 %% (uncategorized) Simulation Parameters
-c = 3e8; % speed of light
-fc = 2.6e9; % center frequency of array [Hz] (2GHz)
-fp = 2e6; % modulation frequency of RF switches [Hz] (2MHz)
-lambda = c/fc; % carrier wavelength
-
 br = 500; % bit-rate of incident signal [kbit/s] (500kbit/s)
 data_last = 50e-6; % "data last for 50us"? [seconds] (50 us)
+fp = 2e6; % modulation frequency of RF switches [Hz] (2MHz)
 
 
 %% Source Signals
@@ -32,13 +28,18 @@ sULA = phased.ULA('Element',element, ...
 
 %% Generate Gamma - Harmonic Coefficient Matrix
 Q = 4; % maximum sideband signal order Q. Set to maintain full column rank?
-L = N/4; % "ON" time of phase 0..
+L = N/2; % "ON" time of phase 0..
 
 gamma = getHarmonicCoefficientMatrix(Q,N,L);
 
 
 %% Generate Y(n_t) - Baseband Sideband Signals
-Xnt = sensorsig(getElementPosition(sULA)/lambda, 100, K);
+c = 3e8; % speed of light
+fc = 2.6e9; % center frequency of array [Hz] (2GHz)
+lambda = c/fc; % carrier wavelength
+snapshots = 100; 
+
+Xnt = sensorsig(getElementPosition(sULA)/lambda, snapshots, K);
 Ynt = gamma*Xnt';
 
 
@@ -53,21 +54,22 @@ Xhat = inv(gamma'*gamma)\gamma'*Ynt;
 
 %% Generate Covariance Matrix 
 % xcov = sensorcov(pos,ang, );
-xcov = cov(Xhat);
+% xcov = cov(Xhat);
+xcov = Xhat*Xhat'/snapshots; % https://github.com/wodls929/BLE_AOA_Positioning/blob/e08485bf93de9162ca50e66f6c137bee432cf5f0/Music_function.m
 
 
 %% DF w/ MUSIC
 [m_doas,m_spec,m_specang] = musicdoa(xcov,length(K)); display(m_doas);
 
-% plot(m_specang,10*log10(m_spec))
-% xlabel('Arrival Angle (deg)')
-% ylabel('Magnitude (dB)')
-% title('MUSIC Spectrum')
-% grid
+plot(m_specang,10*log10(m_spec))
+xlabel('Arrival Angle (deg)')
+ylabel('Magnitude (dB)')
+title('MUSIC Spectrum')
+grid
 
 
 %% DF w/ ESPRIT
-esprit_doas = espritdoa(xcov,length(K)); display(esprit_doas);
+% [e_doas,e_spec,e_specang] = espritdoa(xcov,length(K)); display(e_doas);
 
 
 
