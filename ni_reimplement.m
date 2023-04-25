@@ -28,7 +28,7 @@ sULA = phased.ULA('Element',element, ...
 
 %% Generate Gamma - Harmonic Coefficient Matrix
 Q = 4;      % maximum sideband signal order Q. Maintain full column rank?
-L = N/2;    % "ON" time of phase 0..
+L = 1.5;    % "ON" time of phase 0. L∈(0,N/2]. L=1.5 is best value.
 
 gamma = getHarmonicCoefficientMatrix(Q,N,L);
 
