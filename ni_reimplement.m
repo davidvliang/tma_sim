@@ -3,6 +3,9 @@ close all;
 clear;
 clc;
 
+%% Init RNG for MUSIC
+rs = rng(2012);                           % Set random number generator
+
 
 %% (uncategorized/unused) Simulation Parameters
 br = 500;           % bit-rate of incident signal [kbit/s]
