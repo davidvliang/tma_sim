@@ -6,6 +6,7 @@ Gonna try reimplement Ni et. al. 2021 in MATLAB/Simulink
 ## Files
 - signal_model.slx - [DRAFT] simulink simulation of the signal model
 - ni_reimplement.m - [DRAFT] reimplement using matlab functions
+- without_timemod.m - example of DoA without time modulation
 
 
 
