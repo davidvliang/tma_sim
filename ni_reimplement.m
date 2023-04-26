@@ -5,19 +5,21 @@ clc;
 
 
 %% (uncategorized/unused) Simulation Parameters
-br = 500;           % bit-rate of incident signal [kbit/s]
-data_last = 50e-6;  % "data last for 50us"? [seconds] 
-fp = 2e6;           % modulation frequency of RF switches [Hz]
-snr = 10;           % signal-to-noise ratio of each k source [dB]
-
+br = 500;               % bit-rate of incident signal [kbit/s]
+data_last = 50e-6;      % "data last for 50us"? [seconds] 
+fp = 2e6;               % modulation frequency of RF switches [Hz]
+    
 
 %% Source Signals
-K = [5, 15];        % broadside angles of signal sources [degrees]
+K = [5, 15];            % broadside angles of signal sources [degrees]
+snr = 10;               % signal-to-noise ratio of each k source [dB]
 
 
 %% Initialize Phased Array
-N = 8;              % number of antenna elements
-d = 0.5;            % wavelength spacing between elements [wavelengths]
+fc = 2e9;                               % center frequency of array [Hz]
+lambda = physconst('LightSpeed')/fc;    % carrier wavelength
+N = 8;                                  % number of antenna elements
+d = lambda/2;                           % spacing between elements
 
 element = phased.IsotropicAntennaElement;
 sULA = phased.ULA('Element', element, ...
@@ -26,21 +28,29 @@ sULA = phased.ULA('Element', element, ...
                   'ArrayAxis','y');
 
 
-%% Generate Gamma - Harmonic Coefficient Matrix
+%% Generate Recvd Signal, X(nt)
+Nt = 100;                               % number of snapshots
+rs = rng(2021);                         % set rng for sensorsig
+
+Xnt = sensorsig(getElementPosition(sULA)/lambda, Nt, K, db2pow(-snr));
+Xnt = Xnt.';                            % set dimensions to NxNt
+
+% estimator = phased.BeamscanEstimator('SensorArray',sULA,...
+%    'PropagationSpeed',physconst('LightSpeed'),'OperatingFrequency',fc,...
+%    'DOAOutputPort',true,'NumSignals',length(K));
+% [~,ang_est] = estimator(Xnt.');
+% plotSpectrum(estimator)
+
+
+%% Generate Harmonic Coefficient Matrix, Gamma
 Q = 4;      % maximum sideband signal order Q. Maintain full column rank?
 L = 1.5;    % "ON" time of phase 0. L∈(0,N/2]. L=1.5 is best value.
 
 gamma = getHarmonicCoefficientMatrix(Q,N,L);
 
 
-%% Generate Y(n_t) - Baseband Sideband Signals
-snapshots = 1024;                       % number of Nt snapshots
-fc = 2.6e9;                             % center frequency of array [Hz]
-lambda = physconst('LightSpeed')/fc;    % carrier wavelength
-rs = rng(2021);                         % set rng for sensorsig
-
-Xnt = sensorsig(getElementPosition(sULA)/lambda, snapshots, K);
-Ynt = gamma*Xnt.';                      % A.' means nonconjugate transpose 
+%% Generate Baseband Sideband Signals, Y(nt)
+Ynt = gamma*Xnt;
 
 % figure;
 % pspectrum(Ynt(1,:)')
@@ -48,12 +58,13 @@ Ynt = gamma*Xnt.';                      % A.' means nonconjugate transpose
 % pwelch(Ynt')
 
 
-%% Equation 21
-Xhat = inv(gamma'*gamma)\gamma'*Ynt;    % A' means conjugate transpose
+%% Equation 21: Recover Array Signals, Xhat
+Xhat = inv(gamma'*gamma)\gamma'*Ynt;
 
 
 %% Generate Covariance Matrix 
-xcov = Xhat*Xhat'/snapshots;
+xcov = Xhat*Xhat'/Nt;
+% xcov = Xnt*Xnt'/Nt;                     % For non-TM DOA
 
 
 %% DF w/ MUSIC
@@ -69,13 +80,6 @@ grid
 
 %% DF w/ ESPRIT
 e_doas = espritdoa(xcov,length(K)); display(e_doas);
-
-
-
-
-
-
-
 
 
 
