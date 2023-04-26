@@ -16,8 +16,8 @@ K = [5, 15];        % broadside angles of signal sources [degrees]
 
 
 %% Initialize Phased Array
-N = 8;      % number of antenna elements
-d = 0.5;    % wavelength spacing between elements [wavelengths]
+N = 8;              % number of antenna elements
+d = 0.5;            % wavelength spacing between elements [wavelengths]
 
 element = phased.IsotropicAntennaElement;
 sULA = phased.ULA('Element',element, ...
@@ -44,18 +44,11 @@ Ynt = gamma*Xnt.';                      % A.' means nonconjugate transpose
 
 
 %% Equation 21
-% Xhat = zeros(N);
-% for nt = 1:N
-%     Xhat(nt) = inv(gamma'*gamma)*gamma'*Ynt(nt);
-% end
-
 Xhat = inv(gamma'*gamma)\gamma'*Ynt;    % A' means conjugate transpose
 
 
 %% Generate Covariance Matrix 
-% xcov = sensorcov(pos,ang, );
-% xcov = cov(Xhat);
-xcov = Xhat*Xhat'/snapshots; % https://github.com/wodls929/BLE_AOA_Positioning/blob/e08485bf93de9162ca50e66f6c137bee432cf5f0/Music_function.m
+xcov = Xhat*Xhat'/snapshots;            % https://github.com/wodls929/BLE_AOA_Positioning/blob/e08485bf93de9162ca50e66f6c137bee432cf5f0/Music_function.m
 
 
 %% DF w/ MUSIC
@@ -70,10 +63,6 @@ grid
 
 %% DF w/ ESPRIT
 e_doas = espritdoa(xcov,length(K)); display(e_doas);
-
-
-
-
 
 
 
