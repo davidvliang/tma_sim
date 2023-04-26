@@ -20,7 +20,7 @@ N = 8;              % number of antenna elements
 d = 0.5;            % wavelength spacing between elements [wavelengths]
 
 element = phased.IsotropicAntennaElement;
-sULA = phased.ULA('Element',element, ...
+sULA = phased.ULA('Element', element, ...
                   'NumElements', N, ...
                   'ElementSpacing', d, ...
                   'ArrayAxis','y');
@@ -37,7 +37,7 @@ gamma = getHarmonicCoefficientMatrix(Q,N,L);
 snapshots = 1024;                       % number of Nt snapshots
 fc = 2.6e9;                             % center frequency of array [Hz]
 lambda = physconst('LightSpeed')/fc;    % carrier wavelength
-rs = rng(2021);                       % set rng for sensorsig
+rs = rng(2021);                         % set rng for sensorsig
 
 Xnt = sensorsig(getElementPosition(sULA)/lambda, snapshots, K);
 Ynt = gamma*Xnt.';                      % A.' means nonconjugate transpose 
