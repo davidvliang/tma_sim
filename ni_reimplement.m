@@ -3,19 +3,16 @@ close all;
 clear;
 clc;
 
-%% Init RNG for MUSIC
-rs = rng(2012);                           % Set random number generator
-
 
 %% (uncategorized/unused) Simulation Parameters
 br = 500;           % bit-rate of incident signal [kbit/s]
 data_last = 50e-6;  % "data last for 50us"? [seconds] 
 fp = 2e6;           % modulation frequency of RF switches [Hz]
+snr = 10;           % signal-to-noise ratio of each k source [dB]
 
 
 %% Source Signals
 K = [5, 15];        % broadside angles of signal sources [degrees]
-snr = 10;           % signal-to-noise ratio of each source [dB]
 
 
 %% Initialize Phased Array
@@ -40,6 +37,7 @@ gamma = getHarmonicCoefficientMatrix(Q,N,L);
 snapshots = 1024;                       % number of Nt snapshots
 fc = 2.6e9;                             % center frequency of array [Hz]
 lambda = physconst('LightSpeed')/fc;    % carrier wavelength
+rs = rng(2021);                         % Set rng for sensorsig
 
 Xnt = sensorsig(getElementPosition(sULA)/lambda, snapshots, K);
 Ynt = gamma*Xnt.';                      % A.' means nonconjugate transpose 
