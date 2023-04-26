@@ -37,10 +37,15 @@ gamma = getHarmonicCoefficientMatrix(Q,N,L);
 snapshots = 1024;                       % number of Nt snapshots
 fc = 2.6e9;                             % center frequency of array [Hz]
 lambda = physconst('LightSpeed')/fc;    % carrier wavelength
-rs = rng(2021);                         % Set rng for sensorsig
+rs = rng(2021);                       % set rng for sensorsig
 
 Xnt = sensorsig(getElementPosition(sULA)/lambda, snapshots, K);
 Ynt = gamma*Xnt.';                      % A.' means nonconjugate transpose 
+
+% figure;
+% pspectrum(Ynt(1,:)')
+% figure;
+% pwelch(Ynt')
 
 
 %% Equation 21
@@ -48,12 +53,13 @@ Xhat = inv(gamma'*gamma)\gamma'*Ynt;    % A' means conjugate transpose
 
 
 %% Generate Covariance Matrix 
-xcov = Xhat*Xhat'/snapshots;            % https://github.com/wodls929/BLE_AOA_Positioning/blob/e08485bf93de9162ca50e66f6c137bee432cf5f0/Music_function.m
+xcov = Xhat*Xhat'/snapshots;
 
 
 %% DF w/ MUSIC
 [m_doas,m_spec,m_specang] = musicdoa(xcov,length(K)); display(m_doas);
 
+figure;
 plot(m_specang,10*log10(m_spec))
 xlabel('Arrival Angle (deg)')
 ylabel('Magnitude (dB)')
