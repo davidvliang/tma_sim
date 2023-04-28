@@ -8,7 +8,7 @@ clc;
 br = 500;               % bit-rate of incident signal [kbit/s]
 data_last = 50e-6;      % "data last for 50us"? [seconds] 
 fp = 2e6;               % modulation frequency of RF switches [Hz]
-    
+
 
 %% Source Signals
 K = [5, 15];            % broadside angles of signal sources [degrees]
@@ -29,7 +29,7 @@ sULA = phased.ULA('Element', element, ...
 
 
 %% Generate Recvd Signal, X(nt)
-Nt = 100;                               % number of snapshots
+Nt = 1024;                               % number of snapshots
 rs = rng(2021);                         % set rng for sensorsig
 
 Xnt = sensorsig(getElementPosition(sULA)/lambda, Nt, K, db2pow(-snr));
@@ -52,10 +52,10 @@ gamma = getHarmonicCoefficientMatrix(Q,N,L);
 %% Generate Baseband Sideband Signals, Y(nt)
 Ynt = gamma*Xnt;
 
-% figure;
-% pspectrum(Ynt(1,:)')
-% figure;
-% pwelch(Ynt')
+figure;
+pspectrum(Ynt')
+figure;
+pwelch(Ynt')
 
 
 %% Equation 21: Recover Array Signals, Xhat
