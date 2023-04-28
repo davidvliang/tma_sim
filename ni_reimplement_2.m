@@ -49,9 +49,9 @@ gamma = getHarmonicCoefficientMatrix(Q,N,L);
 
 
 %% Equation 6: Generate Single Channel RF Signal, Y(t)
-fp = 2e6;                       % modulation frequency of RF switches [Hz]
+fp = 2e6;           % modulation frequency of RF switches [Hz]
 
-Yt = getSingleChannel(fp, gamma, Xnt);  % modulate+combine recvd signals
+Yt = getSingleChannel(fp, Q, Nt, gamma, Xnt);  % modulate+combine
 
 % figure;
 % pspectrum(Yt(1,:)')
